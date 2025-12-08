@@ -30,9 +30,66 @@ final class PageViewController: UIPageViewController {
             Task {
                 await self?.uiDelegate?.presentActivityActionTriggered()
             }
-        }), UIBarButtonItem.flexibleSpace()]
-        view.addSubview(itemBottomStack)
-        setupConstraints()
+        )
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .action, primaryAction: UIAction { [weak self] _ in
+            Task {
+                await self?.uiDelegate?.presentActivityActionTriggered()
+            }
+        })
+    }
+    
+    override var keyCommands: [UIKeyCommand]? {
+        [
+            {
+                let command = UIKeyCommand(
+                    input: UIKeyCommand.inputLeftArrow,
+                    modifierFlags: [],
+                    action: #selector(backward)
+                )
+                command.wantsPriorityOverSystemBehavior = true
+                return command
+            }(),
+            {
+                let command = UIKeyCommand(
+                    input: UIKeyCommand.inputRightArrow,
+                    modifierFlags: [],
+                    action: #selector(forward)
+                )
+                command.wantsPriorityOverSystemBehavior = true
+                return command
+            }()
+        ]
+    }
+    
+    @objc func backward() {
+        guard let currentViewController = viewControllers?.first else {
+            return
+        }
+        let beforeViewController = dataSource?.pageViewController(self, viewControllerBefore: currentViewController)
+        if let beforeViewController {
+            setViewControllers(
+                [beforeViewController],
+                direction: .reverse,
+                animated: true,
+                completion: nil
+            )
+        }
+    }
+    
+    @objc func forward() {
+        guard let currentViewController = viewControllers?.first else {
+            return
+        }
+        let nextViewController = dataSource?.pageViewController(self, viewControllerAfter: currentViewController)
+        if let nextViewController {
+            setViewControllers(
+                [nextViewController],
+                direction: .forward,
+                animated: true,
+                completion: nil
+            )
+        }
     }
     
     private func setupConstraints() {
