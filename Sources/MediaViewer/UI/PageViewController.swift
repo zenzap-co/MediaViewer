@@ -23,12 +23,13 @@ final class PageViewController: UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak self] _ in
-            self?.uiDelegate?.dismissActionTriggered()
-        })
-        toolbarItems = [UIBarButtonItem(systemItem: .action, primaryAction: UIAction { [weak self] _ in
-            Task {
-                await self?.uiDelegate?.presentActivityActionTriggered()
+
+        view.backgroundColor = .clear
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            primaryAction: UIAction { [weak self] _ in
+                self?.uiDelegate?.dismissActionTriggered()
             }
         )
         
