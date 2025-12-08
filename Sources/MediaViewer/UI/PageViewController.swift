@@ -20,19 +20,63 @@ final class PageViewController: UIPageViewController {
             }
         )
         
-        if #unavailable(iOS 19) {
-            navigationItem.leftBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
-        }
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "ellipsis"),
-            primaryAction: UIAction { [weak self] _ in
-                self?.uiDelegate?.presentActivityActionTriggered()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .action, primaryAction: UIAction { [weak self] _ in
+            Task {
+                await self?.uiDelegate?.presentActivityActionTriggered()
             }
-        )
-        
-        if #unavailable(iOS 19) {
-            navigationItem.rightBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
+        })
+    }
+    
+    override var keyCommands: [UIKeyCommand]? {
+        [
+            {
+                let command = UIKeyCommand(
+                    input: UIKeyCommand.inputLeftArrow,
+                    modifierFlags: [],
+                    action: #selector(backward)
+                )
+                command.wantsPriorityOverSystemBehavior = true
+                return command
+            }(),
+            {
+                let command = UIKeyCommand(
+                    input: UIKeyCommand.inputRightArrow,
+                    modifierFlags: [],
+                    action: #selector(forward)
+                )
+                command.wantsPriorityOverSystemBehavior = true
+                return command
+            }()
+        ]
+    }
+    
+    @objc func backward() {
+        guard let currentViewController = viewControllers?.first else {
+            return
+        }
+        let beforeViewController = dataSource?.pageViewController(self, viewControllerBefore: currentViewController)
+        if let beforeViewController {
+            setViewControllers(
+                [beforeViewController],
+                direction: .reverse,
+                animated: true,
+                completion: nil
+            )
+        }
+    }
+    
+    @objc func forward() {
+        guard let currentViewController = viewControllers?.first else {
+            return
+        }
+        let nextViewController = dataSource?.pageViewController(self, viewControllerAfter: currentViewController)
+        if let nextViewController {
+            setViewControllers(
+                [nextViewController],
+                direction: .forward,
+                animated: true,
+                completion: nil
+            )
         }
     }
     
