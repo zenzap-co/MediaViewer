@@ -23,6 +23,11 @@ final class NavigationController: WorkaroundNavigationController {
         ]
         navigationBar.standardAppearance = navigationBarAppearance
         navigationBar.scrollEdgeAppearance = navigationBarAppearance
+        navigationBar.compactAppearance = navigationBarAppearance
+        navigationBar.compactScrollEdgeAppearance = navigationBarAppearance
+
+        // Enable translucency for native blur effect
+        navigationBar.isTranslucent = true
 
         let toolbarAppearance = UIToolbarAppearance()
         toolbar.standardAppearance = toolbarAppearance
